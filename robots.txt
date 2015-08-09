@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://nathan-russell-blog.github.io/sitemap.xml 
