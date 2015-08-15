@@ -9,9 +9,14 @@
 
 <meta name="author" content="Nathan Russell"> 
 
-<meta name="description" content="All Posts Gist Markdown #!/bin/bash
-r -e &#39;servr::httd()&#39; #include &lt;chrono&gt;
-#include &lt;iostream&gt; struct timer { timer() = default &hellip;"> <meta name="keywords" content="">
+<meta name="description" content="All Posts Code Markdown Test Bash Markdown 1
+2
+3
+4
+5
+6
+#!/bin/bash SOMEDIRECTORY=$(echo $PWD | sed -re &#39;s/.+(include\/)(.+)/\1/&#39;)
+echo $ &hellip;"> <meta name="keywords" content="">
 
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -65,7 +70,7 @@ $(document).ready(
 
 <body>
 	<header id="header" class="inner"><h1><a href="/">Nathan Russell</a></h1>
-<h4>Another half-assed programming blog...</h4>
+<h4>The Layman Programmer</h4>
 <nav id="main-nav"><ul>
 	<li><a href="/">Blog</a></li>
 	<li><a href="/about">About</a></li>
@@ -109,167 +114,6 @@ $(document).ready(
 
   <div class="article-list">
     <div class="container">
-      
-      
-      <div class="row">
-        <div class="col-md-offset-3 col-md-6">
-          <article>
-  <h2><a href="/blog/2015/08/10/gist-markdown/">Gist Markdown</a></h2>
-  
-  <p>
-    <div><script src='https://gist.github.com/1a3b00d2fb4002d1f98e.js?file=bash_gist.sh'></script>
-<noscript><pre><code>#!/bin/bash
-r -e &#39;servr::httd()&#39;
-</code></pre></noscript></div>
-
-
-
-
-<div><script src='https://gist.github.com/1a3b00d2fb4002d1f98e.js?file=cpp_gist.cpp'></script>
-<noscript><pre><code>#include &lt;chrono&gt;
-#include &lt;iostream&gt;
-
-  struct timer {
-    timer() = default;
-    void start() {
-      start_ = std::chrono::high_resolution_clock::now();
-    }
-    void stop() {
-      stop_ = std::chrono::high_resolution_clock::now();
-    }
-    void print_nano() {
-      std::cout &lt;&lt;
-      &quot;\nElapsed time: &quot; &lt;&lt; 
-      std::chrono::duration_cast&lt;std::chrono::nanoseconds&gt;(stop_ - start_).count() &lt;&lt;
-      &quot; ns.&quot; &lt;&lt; std::endl;
-    }
-    void print_micro() {
-      std::cout &lt;&lt;
-      &quot;\nElapsed time: &quot; &lt;&lt; 
-      std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(stop_ - start_).count() &lt;&lt;
-      &quot; us.&quot; &lt;&lt; std::endl;
-    }
-    void print_milli() {
-      std::cout &lt;&lt;
-      &quot;\nElapsed time: &quot; &lt;&lt; 
-      std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(stop_ - start_).count() &lt;&lt;
-      &quot; ms.&quot; &lt;&lt; std::endl;
-    }
-    std::chrono::high_resolution_clock::time_point start_;
-    std::chrono::high_resolution_clock::time_point stop_;
-  };
-  </code></pre></noscript></div>
-
-
-
-
-<div><script src='https://gist.github.com/1a3b00d2fb4002d1f98e.js?file=sql_gist.sql'></script>
-<noscript><pre><code>DECLARE       @i INT = 1;
-DECLARE       @Numbers TABLE ( Number INT );
---
-WHILE @i &lt; 51
-       BEGIN
-              INSERT INTO @Numbers
-                           ( Number )
-                           SELECT @i;
-              SET @i += 1;
-       END;
---
-IF ( OBJECT_ID(&#39;tempdb..#tmp&#39;) IS NOT NULL )
-       DROP TABLE #tmp;
-CREATE TABLE #tmp
-       (
-       id INT IDENTITY(1, 1)
-       ,[Group] VARCHAR(5)
-       ,[Timestamp] DATETIME
-       ,[Value] DECIMAL(9, 2)
-       );
---
-CREATE NONCLUSTERED INDEX idx_tmp_Group ON #tmp([Group]);
---
-WITH   letters
-                AS ( SELECT &#39;A&#39; AS [Letter]
-                        UNION
-                        SELECT     &#39;B&#39;
-                        UNION
-                        SELECT     &#39;C&#39;
-                     )
-       INSERT INTO #tmp
-                     ([Group]
-                     ,[Timestamp]
-                     ,[Value]
-                     )
-                     SELECT l.Letter
-                              ,GETDATE() - n.Number
-                              ,CAST(ABS(CHECKSUM(NEWID())) % 299 AS DECIMAL(9, 2))
-                     FROM   letters l
-                                  CROSS JOIN @Numbers n;
---
-WITH   top5
-                AS ( SELECT n.Number
-                        FROM              @Numbers n
-                        WHERE      n.Number IN ( 10, 20, 30, 40, 50 )
-                     ),
-              lagtime
-                AS ( SELECT t.[Group]
-                                     ,t.Timestamp AS [LHS Time]
-                                     ,LAG(t.Timestamp, x.Number) OVER ( PARTITION BY t.[Group] ORDER BY t.Timestamp ) AS [RHS Time]
-                                     ,t.Value
-                        FROM              #tmp t
-                                         OUTER APPLY ( SELECT t5.Number
-                                                                FROM        top5 t5
-                                                              ) x
-                     )
-       SELECT l.[Group]
-                 ,l.[LHS Time] AS [Reference Time]
-                 ,COUNT(*) AS [Value Count]
-                 ,CAST(AVG(t.Value) AS DECIMAL(9, 2)) AS [Mean Value]
-                 ,CAST(STDEV(t.Value) AS DECIMAL(9, 4)) AS [Sd Value]
-       FROM   lagtime l
-                     INNER JOIN #tmp t ON l.[Group] = t.[Group]
-                                                       AND l.[RHS Time] = t.Timestamp
-       WHERE  l.[RHS Time] IS NOT NULL
-       GROUP BY l.[Group]
-                 ,l.[LHS Time]
-       HAVING COUNT(*) &gt; 1
-       ORDER BY l.[Group]
-                 ,l.[LHS Time];
-</code></pre></noscript></div>
-
-
-
-
-  </p>
-  <span class="meta">
-    written 
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-08-10T09:05:56-04:00" pubdate data-updated="true"></time>
-    
-
-<div class="tags">
-
-	<a class='category' href='/blog/categories/code-sample/'>code-sample</a>, <a class='category' href='/blog/categories/test/'>test</a>
-
-</div>
-
-
-  </span>
-
-  
-</article>
-
-        </div>
-      </div>
       
       
       <div class="row">

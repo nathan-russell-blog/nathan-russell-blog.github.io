@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://nathan-russell-blog.github.io/blog/2015/08/10/gist-markdown/</loc>
-    <lastmod>2015-08-10T09:05:56-04:00</lastmod>
-  </url>
-  <url>
     <loc>http://nathan-russell-blog.github.io/blog/2015/08/09/code-markdown-test/</loc>
     <lastmod>2015-08-09T20:43:51-04:00</lastmod>
   </url>

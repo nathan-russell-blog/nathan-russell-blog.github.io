@@ -4,7 +4,7 @@
   <title><![CDATA[Nathan Russell]]></title>
   <link href="http://nathan-russell-blog.github.io/atom.xml" rel="self"/>
   <link href="http://nathan-russell-blog.github.io/"/>
-  <updated>2015-08-10T09:09:07-04:00</updated>
+  <updated>2015-08-15T09:33:59-04:00</updated>
   <id>http://nathan-russell-blog.github.io/</id>
   <author>
     <name><![CDATA[Nathan Russell]]></name>
@@ -12,135 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Gist Markdown]]></title>
-    <link href="http://nathan-russell-blog.github.io/blog/2015/08/10/gist-markdown/"/>
-    <updated>2015-08-10T09:05:56-04:00</updated>
-    <id>http://nathan-russell-blog.github.io/blog/2015/08/10/gist-markdown</id>
-    <content type="html"><![CDATA[<div><script src='https://gist.github.com/1a3b00d2fb4002d1f98e.js?file=bash_gist.sh'></script>
-<noscript><pre><code>#!/bin/bash
-r -e &#39;servr::httd()&#39;
-</code></pre></noscript></div>
-
-
-
-
-<div><script src='https://gist.github.com/1a3b00d2fb4002d1f98e.js?file=cpp_gist.cpp'></script>
-<noscript><pre><code>#include &lt;chrono&gt;
-#include &lt;iostream&gt;
-
-  struct timer {
-    timer() = default;
-    void start() {
-      start_ = std::chrono::high_resolution_clock::now();
-    }
-    void stop() {
-      stop_ = std::chrono::high_resolution_clock::now();
-    }
-    void print_nano() {
-      std::cout &lt;&lt;
-      &quot;\nElapsed time: &quot; &lt;&lt; 
-      std::chrono::duration_cast&lt;std::chrono::nanoseconds&gt;(stop_ - start_).count() &lt;&lt;
-      &quot; ns.&quot; &lt;&lt; std::endl;
-    }
-    void print_micro() {
-      std::cout &lt;&lt;
-      &quot;\nElapsed time: &quot; &lt;&lt; 
-      std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(stop_ - start_).count() &lt;&lt;
-      &quot; us.&quot; &lt;&lt; std::endl;
-    }
-    void print_milli() {
-      std::cout &lt;&lt;
-      &quot;\nElapsed time: &quot; &lt;&lt; 
-      std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(stop_ - start_).count() &lt;&lt;
-      &quot; ms.&quot; &lt;&lt; std::endl;
-    }
-    std::chrono::high_resolution_clock::time_point start_;
-    std::chrono::high_resolution_clock::time_point stop_;
-  };
-  </code></pre></noscript></div>
-
-
-
-
-<div><script src='https://gist.github.com/1a3b00d2fb4002d1f98e.js?file=sql_gist.sql'></script>
-<noscript><pre><code>DECLARE       @i INT = 1;
-DECLARE       @Numbers TABLE ( Number INT );
---
-WHILE @i &lt; 51
-       BEGIN
-              INSERT INTO @Numbers
-                           ( Number )
-                           SELECT @i;
-              SET @i += 1;
-       END;
---
-IF ( OBJECT_ID(&#39;tempdb..#tmp&#39;) IS NOT NULL )
-       DROP TABLE #tmp;
-CREATE TABLE #tmp
-       (
-       id INT IDENTITY(1, 1)
-       ,[Group] VARCHAR(5)
-       ,[Timestamp] DATETIME
-       ,[Value] DECIMAL(9, 2)
-       );
---
-CREATE NONCLUSTERED INDEX idx_tmp_Group ON #tmp([Group]);
---
-WITH   letters
-                AS ( SELECT &#39;A&#39; AS [Letter]
-                        UNION
-                        SELECT     &#39;B&#39;
-                        UNION
-                        SELECT     &#39;C&#39;
-                     )
-       INSERT INTO #tmp
-                     ([Group]
-                     ,[Timestamp]
-                     ,[Value]
-                     )
-                     SELECT l.Letter
-                              ,GETDATE() - n.Number
-                              ,CAST(ABS(CHECKSUM(NEWID())) % 299 AS DECIMAL(9, 2))
-                     FROM   letters l
-                                  CROSS JOIN @Numbers n;
---
-WITH   top5
-                AS ( SELECT n.Number
-                        FROM              @Numbers n
-                        WHERE      n.Number IN ( 10, 20, 30, 40, 50 )
-                     ),
-              lagtime
-                AS ( SELECT t.[Group]
-                                     ,t.Timestamp AS [LHS Time]
-                                     ,LAG(t.Timestamp, x.Number) OVER ( PARTITION BY t.[Group] ORDER BY t.Timestamp ) AS [RHS Time]
-                                     ,t.Value
-                        FROM              #tmp t
-                                         OUTER APPLY ( SELECT t5.Number
-                                                                FROM        top5 t5
-                                                              ) x
-                     )
-       SELECT l.[Group]
-                 ,l.[LHS Time] AS [Reference Time]
-                 ,COUNT(*) AS [Value Count]
-                 ,CAST(AVG(t.Value) AS DECIMAL(9, 2)) AS [Mean Value]
-                 ,CAST(STDEV(t.Value) AS DECIMAL(9, 4)) AS [Sd Value]
-       FROM   lagtime l
-                     INNER JOIN #tmp t ON l.[Group] = t.[Group]
-                                                       AND l.[RHS Time] = t.Timestamp
-       WHERE  l.[RHS Time] IS NOT NULL
-       GROUP BY l.[Group]
-                 ,l.[LHS Time]
-       HAVING COUNT(*) &gt; 1
-       ORDER BY l.[Group]
-                 ,l.[LHS Time];
-</code></pre></noscript></div>
-
-
-
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Code Markdown Test]]></title>
