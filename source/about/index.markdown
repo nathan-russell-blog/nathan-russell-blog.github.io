@@ -22,6 +22,6 @@ Yes, Actuarial Science, not *Computer Science*. My exposure to programming durin
 in my final semester I took an actuarial statistics course which made heavy use of the 
 [R programming language](https://www.r-project.org/). IMO this is *the* way to teach statistics courses, 
 primarily because in the *real world* you will spend approximately zero seconds crunching numbers with 
-a pencil and paper. 
+a pencil and paper. Just saying...
 
 
