@@ -18,12 +18,10 @@ Sure. I graduated from the University of Connecticut in 2012 with a BA in
 
 {% img center /images/aboutpage/uconn-sunset.jpg %} 
 
-If you're familiar with Actuarial Science, that's great - you would have saved me a slightly tedious, several minute long 
-explanation in a face-to-face conversation. If not, don't worry, you're not alone. Just throwing out a rough estimate, 
-I'd say that *maybe* 1 in 3 people know what an actuary actually does (pardon the alliteration...) - and by **know** 
-I mean something besides *"Oh, like the guy in that [Ben Stiller movie](https://en.wikipedia.org/wiki/Along_Came_Polly), right??"*. 
-Anyways, a perfect 
-segue to my next humble brag, right? I'll resist the urge just this once, and direct you to the Wiki page linked above for more 
-details. 
+Yes, Actuarial Science, not *Computer Science*. My exposure to programming during this time was very limited - 
+in my final semester I took an actuarial statistics course which made heavy use of the 
+[R programming language](https://www.r-project.org/). IMO this is *the* way to teach statistics courses, 
+primarily because in the *real world* you will spend approximately zero seconds crunching numbers with 
+a pencil and paper. 
 
 
