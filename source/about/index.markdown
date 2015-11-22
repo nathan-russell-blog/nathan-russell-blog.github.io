@@ -24,4 +24,6 @@ in my final semester I took an actuarial statistics course which made heavy use 
 primarily because in the *real world* you will spend approximately zero seconds crunching numbers with 
 a pencil and paper. Just saying...
 
+Getting back to the point, I don't have a formal background in computer science. I do, however, have the 
+benefit of real world experience which will (hopefully) be useful to the reader. 
 
