@@ -3,8 +3,8 @@
 template <int RTYPE, bool NA, typename VEC_T>
 class LazyCastImpl 
   : public Rcpp::VectorBase<
-    INTSXP, true, 
-    LazyCastImpl<RTYPE, NA, VEC_T> 
+      INTSXP, true, 
+      LazyCastImpl<RTYPE, NA, VEC_T> 
 > {
 public:
   typedef Rcpp::VectorBase<RTYPE, NA, VEC_T> VEC_TYPE;
