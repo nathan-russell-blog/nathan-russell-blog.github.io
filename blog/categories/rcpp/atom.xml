@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Nathan Russell]]></title>
-  <link href="http://nathan-russell-blog.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: rcpp | Nathan Russell]]></title>
+  <link href="http://nathan-russell-blog.github.io/blog/categories/rcpp/atom.xml" rel="self"/>
   <link href="http://nathan-russell-blog.github.io/"/>
   <updated>2015-11-21T21:09:06-05:00</updated>
   <id>http://nathan-russell-blog.github.io/</id>
@@ -32,7 +32,7 @@ function - for simplicity we only consider converting <code>numeric</code> vecto
 
 <p>First, a naïve C++ implementation:</p>
 
-<figure class='code'><figcaption><span> (NaiveCast.cpp)</span> <a href='http://nathan-russell-blog.github.io/downloads/code/cpp/NaiveCast.cpp'>download</a></figcaption>
+<p><figure class='code'><figcaption><span> (NaiveCast.cpp)</span> <a href='/downloads/code/cpp/NaiveCast.cpp'>download</a></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -59,12 +59,11 @@ function - for simplicity we only consider converting <code>numeric</code> vecto
 </span><span class='line'>
 </span><span class='line'>  <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
 </span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+</span></code></pre></td></tr></table></div></figure></p>
 
 <p>And a quick sanity check:</p>
 
-<figure class='code'><figcaption><span> (CheckNaiveCast.R)</span> <a href='http://nathan-russell-blog.github.io/downloads/code/R/CheckNaiveCast.R'>download</a></figcaption>
+<p><figure class='code'><figcaption><span> (CheckNaiveCast.R)</span> <a href='/downloads/code/R/CheckNaiveCast.R'>download</a></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -81,12 +80,11 @@ function - for simplicity we only consider converting <code>numeric</code> vecto
 </span><span class='line'><span class="c1"># [1]  1  2  3  4  5  6  7  8  9 10</span>
 </span><span class='line'>R<span class="o">&gt;</span> <span class="kp">class</span><span class="p">(</span>y<span class="p">)</span>
 </span><span class='line'><span class="c1"># [1] &quot;integer&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+</span></code></pre></td></tr></table></div></figure></p>
 
 <p>Alright, so far so good. Now the sugarized version, which is a bit more involved:</p>
 
-<figure class='code'><figcaption><span> (LazyCast.cpp)</span> <a href='http://nathan-russell-blog.github.io/downloads/code/cpp/LazyCast.cpp'>download</a></figcaption>
+<p><figure class='code'><figcaption><span> (LazyCast.cpp)</span> <a href='/downloads/code/cpp/LazyCast.cpp'>download</a></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -173,8 +171,7 @@ function - for simplicity we only consider converting <code>numeric</code> vecto
 </span><span class='line'><span class="n">Rcpp</span><span class="o">::</span><span class="n">IntegerVector</span> <span class="n">lazy_cast</span><span class="p">(</span><span class="n">Rcpp</span><span class="o">::</span><span class="n">NumericVector</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>  <span class="k">return</span> <span class="n">LazyCast</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
 </span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+</span></code></pre></td></tr></table></div></figure></p>
 
 <p>If you are initially put off by this, try to reserve judgement for a bit. Despite the somewhat complex appearance, many
 Rcpp sugar functions / expression template operations follow a very similar pattern, so if are willing to put a

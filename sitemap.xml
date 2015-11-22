@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://nathan-russell-blog.github.io/blog/2015/11/21/rcpp-and-expression-templates/</loc>
+    <lastmod>2015-11-21T19:58:22-05:00</lastmod>
+  </url>
+  <url>
     <loc>http://nathan-russell-blog.github.io/posts/</loc>
   </url>
   <url>
@@ -20,5 +24,14 @@
   </url>
   <url>
     <loc>http://nathan-russell-blog.github.io/portfolio/</loc>
+  </url>
+  <url>
+    <loc>http://nathan-russell-blog.github.io/blog/categories/rcpp/</loc>
+  </url>
+  <url>
+    <loc>http://nathan-russell-blog.github.io/blog/categories/c-plus-plus/</loc>
+  </url>
+  <url>
+    <loc>http://nathan-russell-blog.github.io/blog/categories/tmp/</loc>
   </url>
 </urlset>
