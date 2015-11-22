@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rcpp | Nathan Russell]]></title>
   <link href="http://nathan-russell-blog.github.io/blog/categories/rcpp/atom.xml" rel="self"/>
   <link href="http://nathan-russell-blog.github.io/"/>
-  <updated>2015-11-21T21:09:06-05:00</updated>
+  <updated>2015-11-21T21:49:25-05:00</updated>
   <id>http://nathan-russell-blog.github.io/</id>
   <author>
     <name><![CDATA[Nathan Russell]]></name>
@@ -173,7 +173,7 @@ function - for simplicity we only consider converting <code>numeric</code> vecto
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure></p>
 
-<p>If you are initially put off by this, try to reserve judgement for a bit. Despite the somewhat complex appearance, many
+<p>If you are initially put off by this, try to reserve judgement for the time being. Despite the somewhat complex appearance, many
 Rcpp sugar functions / expression template operations follow a very similar pattern, so if are willing to put a
 little extra effort into familiarizing
 yourself will the basic paradigm, you will have added a <em>very</em> powerful tool to your C++ / Rcpp arsenal.</p>
@@ -190,6 +190,34 @@ to the implementation class</p></li>
 
 <p>This last part has nothing to do with expression templates; it&rsquo;s just an implementation detail
 specific to this example.</p>
+
+<p>Anyways, let&rsquo;s start by focusing on the first part, as this is mainly where the magic happens. For the benefit of
+those who may not have spent countless hours reading through <a href="https://github.com/RcppCore/Rcpp/tree/master/inst/include/Rcpp">Rcpp source code</a>,
+I&rsquo;ll briefly touch on a few Rcpp-isms in the above code (not necessarily related to the topic at hand).</p>
+
+<ul>
+<li>Line 3, <code>template &lt;int RTYPE, bool NA, typename VEC_T&gt;</code></li>
+</ul>
+
+
+<p>You will see this for pretty much every <code>struct</code> / <code>class</code> deriving from <code>Rcpp::VectorBase</code> because (not surprisingly)
+that <code>int / bool / typename</code> combo corresponds to the template parameters of the
+<a href="https://github.com/RcppCore/Rcpp/blob/master/inst/include/Rcpp/vector/VectorBase.h#L28">VectorBase class</a>.
+<code>RTYPE</code> is the integer code representing the <code>SEXPTYPE</code>, e.g. <code>REALSXP</code> (<code>numeric</code>) has an <code>RTYPE</code> of 14,
+etc&hellip; A complete list can be found <a href="http://www.biosino.org/R/R-doc/R-ints/SEXPTYPEs.html">here</a>. The other
+non-type template parameter, <code>NA</code>, signifies whether or not the base class can contain missing (<code>NA</code>) values.
+Finally, the type parameter <code>VEC_T</code>, which is essential to the
+<a href="https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Curiously_Recurring_Template_Pattern">CRTP</a>
+idiom, represents the (non-base) vector type; a templated class itself.</p>
+
+<ul>
+<li>Line 12; <code>typedef typename Rcpp::traits::storage_type&lt;INTSXP&gt;::type result_type</code></li>
+</ul>
+
+
+<p>Note that this is unnecessary in our example; I could have just as well written
+<code>typedef int result_type</code>. However, typically in such templates, <code>::storage_type&lt; &gt;::type</code> is used to get the equivalent C++
+type of an (unknown) integer template parameter (e.g. <code>RTYPE</code>).</p>
 ]]></content>
   </entry>
   
