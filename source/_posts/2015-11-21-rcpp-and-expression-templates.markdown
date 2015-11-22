@@ -91,6 +91,64 @@ contain missing values, and if so, they should be preserved in the output vector
 3. The type parameter is the class itself - `LazyCastImpl<RTYPE, NA, VEC_T>` - since a key idea of CRTP is 
 to provide the base class with access to / knowledge of whatever class is deriving from it. 
 
+I'll summarize this with a general (but not definitive) rule-of-thumb regarding the expression template pattern in the 
+context of Rcpp: *when inheriting from the `VectorBase` class, we set the non-type parameters based on 
+the desired output object, and we set the type parameter to the derived class itself.*
+
+___
+
+Next, we consider the `typedef`s on lines 10 and 11 (line 12 was previously touched discussed): 
+
+``` c++
+typedef Rcpp::VectorBase<RTYPE, NA, VEC_T> VEC_TYPE;
+typedef Rcpp::Vector<INTSXP> VECTOR;
+``` 
+Here, 
+
++ `VEC_TYPE` is a `typedef` for the `VectorBase` object that will be passed to our `LazyCastImpl` constructor, and for which 
+we will also store a constant-reference-to-member to, e.g. `vec`. 
+
++ `VECTOR` is the output object of our expression (more on this to come). We use a `Rcpp::Vector<INTSXP>` and not 
+a `VectorBase<...>` because the latter 
+is just a base class and not really suitable for direct manipulation within code. 
+
+___
+
+Now we consider line 15, `const VEC_TYPE& vec`, in conjunction with our constructor on lines 18 and 19: 
+
+``` c++
+LazyCastImpl(const VEC_TYPE& vec_)
+  : vec(vec_.get_ref()) {}
+
+```
+
+Since our member `vec` is a constant reference object, it **must be initialized in the constructor's member initializer list**. 
+Attempting to initialize such a data member in the body of the constructor or at some later point (e.g. in a member function) 
+will result in a compiler error. Also, note the manner in which we are initializing `vec`: `vec_.get_ref()`. Instead of calling 
+the `VectorBase` copy constructor (which is not explicitly defined, but presumably the compiler has generated one to the effect 
+of `VectorBase(const VectorBase& other)`), we initialize our member `vec` based on the `get_ref()` method - a method which we 
+also implement in our own class. 
+
+___
+
+
+Finally, we examine lines 21 - 31, the methods of our `LazyCastImpl` class. First, the `size()` method on line 21: 
+
+``` c++ 
+inline R_xlen_t size() const {
+  return vec.size();
+}
+```
+Although we are not directly using this method to accomplish anything, in accordance with CRTP, we must implement it becuase the parent 
+class defines its `size()` method as: 
+
+``` c++ 
+inline R_xlen_t size() const {
+  return static_cast<const VECTOR*>(this)->size();
+}
+```
+
+
 
 
 
