@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rcpp | Nathan Russell]]></title>
   <link href="http://nathan-russell-blog.github.io/blog/categories/rcpp/atom.xml" rel="self"/>
   <link href="http://nathan-russell-blog.github.io/"/>
-  <updated>2015-11-21T21:49:25-05:00</updated>
+  <updated>2015-11-22T10:08:39-05:00</updated>
   <id>http://nathan-russell-blog.github.io/</id>
   <author>
     <name><![CDATA[Nathan Russell]]></name>
@@ -22,13 +22,15 @@
 example use case.</em></p>
 
 <p>One of the more notable features of the <a href="https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-introduction.pdf">Rcpp package</a>
-are the so called &ldquo;sugar expressions&rdquo;, syntactic sugar for common R functions / expressions that can be called from
+is the family of so called &ldquo;sugar expressions&rdquo;, syntactic sugar for common R functions / expressions that can be called from
 within C++ code. More information in the <a href="https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-sugar.pdf">dedicated vignette</a>.
 If you&rsquo;ve every wondered why these sugar expressions are so delightfully performant, the magic lies in the use of a neat C++
 template metaprogramming (TMP) technique known as <a href="https://en.wikipedia.org/wiki/Expression_templates">Expression Templates</a>. If
 you are interested in learning more about expression templates, there is a fair bit of literature available online, but for now,
-let&rsquo;s jump right into an example. To keep things light, we will use expression templates to implement the R&rsquo;s <code>as.integer</code>
+let&rsquo;s jump right into an example. To keep things light, we will this technique to implement the R&rsquo;s <code>as.integer</code>
 function - for simplicity we only consider converting <code>numeric</code> vectors to <code>integer</code> vectors.</p>
+
+<hr />
 
 <p>First, a naïve C++ implementation:</p>
 
@@ -133,8 +135,8 @@ function - for simplicity we only consider converting <code>numeric</code> vecto
 </span><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="kt">int</span> <span class="n">RTYPE</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">NA</span><span class="p">,</span> <span class="k">typename</span> <span class="n">VEC_T</span><span class="o">&gt;</span>
 </span><span class='line'><span class="k">class</span> <span class="nc">LazyCastImpl</span>
 </span><span class='line'>  <span class="o">:</span> <span class="k">public</span> <span class="n">Rcpp</span><span class="o">::</span><span class="n">VectorBase</span><span class="o">&lt;</span>
-</span><span class='line'>    <span class="n">INTSXP</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span>
-</span><span class='line'>    <span class="n">LazyCastImpl</span><span class="o">&lt;</span><span class="n">RTYPE</span><span class="p">,</span> <span class="n">NA</span><span class="p">,</span> <span class="n">VEC_T</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="n">INTSXP</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">LazyCastImpl</span><span class="o">&lt;</span><span class="n">RTYPE</span><span class="p">,</span> <span class="n">NA</span><span class="p">,</span> <span class="n">VEC_T</span><span class="o">&gt;</span>
 </span><span class='line'><span class="o">&gt;</span> <span class="p">{</span>
 </span><span class='line'><span class="k">public</span><span class="o">:</span>
 </span><span class='line'>  <span class="k">typedef</span> <span class="n">Rcpp</span><span class="o">::</span><span class="n">VectorBase</span><span class="o">&lt;</span><span class="n">RTYPE</span><span class="p">,</span> <span class="n">NA</span><span class="p">,</span> <span class="n">VEC_T</span><span class="o">&gt;</span> <span class="n">VEC_TYPE</span><span class="p">;</span>
@@ -174,9 +176,9 @@ function - for simplicity we only consider converting <code>numeric</code> vecto
 </span></code></pre></td></tr></table></div></figure></p>
 
 <p>If you are initially put off by this, try to reserve judgement for the time being. Despite the somewhat complex appearance, many
-Rcpp sugar functions / expression template operations follow a very similar pattern, so if are willing to put a
+Rcpp sugar functions / expression template operations follow a very similar pattern, so if you are willing to put a
 little extra effort into familiarizing
-yourself will the basic paradigm, you will have added a <em>very</em> powerful tool to your C++ / Rcpp arsenal.</p>
+yourself with the basic paradigm, you will have added a <em>very</em> powerful tool to your C++ / Rcpp arsenal.</p>
 
 <p>The above source file essentially consists of three parts:</p>
 
@@ -191,9 +193,11 @@ to the implementation class</p></li>
 <p>This last part has nothing to do with expression templates; it&rsquo;s just an implementation detail
 specific to this example.</p>
 
+<hr />
+
 <p>Anyways, let&rsquo;s start by focusing on the first part, as this is mainly where the magic happens. For the benefit of
 those who may not have spent countless hours reading through <a href="https://github.com/RcppCore/Rcpp/tree/master/inst/include/Rcpp">Rcpp source code</a>,
-I&rsquo;ll briefly touch on a few Rcpp-isms in the above code (not necessarily related to the topic at hand).</p>
+I&rsquo;ll briefly touch on a few Rcpp-isms in the example above (not necessarily related to the topic at hand).</p>
 
 <ul>
 <li>Line 3, <code>template &lt;int RTYPE, bool NA, typename VEC_T&gt;</code></li>
@@ -218,6 +222,26 @@ idiom, represents the (non-base) vector type; a templated class itself.</p>
 <p>Note that this is unnecessary in our example; I could have just as well written
 <code>typedef int result_type</code>. However, typically in such templates, <code>::storage_type&lt; &gt;::type</code> is used to get the equivalent C++
 type of an (unknown) integer template parameter (e.g. <code>RTYPE</code>).</p>
+
+<hr />
+
+<p>Moving on, the first thing to notice is the inheritence pattern used - also a manifestation of CRTP - on lines 5 through 8:</p>
+
+<pre><code class="c++">// ... 
+public Rcpp::VectorBase&lt; INTSXP, true, LazyCastImpl&lt;RTYPE, NA, VEC_T&gt; &gt;
+</code></pre>
+
+<p>Unlike the <code>typedef</code> on line 10 (<code>typedef Rcpp::VectorBase&lt;RTYPE, NA, VEC_T&gt; VEC_TYPE</code>), we inherit from a
+base vector with the following composition:</p>
+
+<ol>
+<li><p><code>SEXPTYPE</code> is <code>INTSXP</code>: we already know that ultimately our result will be an integer vector.</p></li>
+<li><p>the <code>NA</code> non-type parameter is set to <code>true</code>: we need to account for the possibility that our input may
+contain missing values, and if so, they should be preserved in the output vector.</p></li>
+<li><p>The type parameter is the class itself - <code>LazyCastImpl&lt;RTYPE, NA, VEC_T&gt;</code> - since a key idea of CRTP is
+to provide the base class with access to / knowledge of whatever class is deriving from it.</p></li>
+</ol>
+
 ]]></content>
   </entry>
   
