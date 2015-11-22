@@ -29,7 +29,7 @@ Alright, so far so good. Now the sugarized version, which is a bit more involved
 
 {% include_code cpp/LazyCast.cpp %}
 
-If you are initially put off by this, try to reserve judgement for a bit. Despite the somewhat complex appearance, many 
+If you are initially put off by this, try to reserve judgement for the time being. Despite the somewhat complex appearance, many 
 Rcpp sugar functions / expression template operations follow a very similar pattern, so if are willing to put a 
 little extra effort into familiarizing
 yourself will the basic paradigm, you will have added a *very* powerful tool to your C++ / Rcpp arsenal. 
@@ -46,7 +46,29 @@ to the implementation class
 This last part has nothing to do with expression templates; it's just an implementation detail 
 specific to this example.
 
+Anyways, let's start by focusing on the first part, as this is mainly where the magic happens. For the benefit of 
+those who may not have spent countless hours reading through [Rcpp source code](https://github.com/RcppCore/Rcpp/tree/master/inst/include/Rcpp), 
+I'll briefly touch on a few Rcpp-isms in the above code (not necessarily related to the topic at hand). 
 
++ Line 3, `template <int RTYPE, bool NA, typename VEC_T>`
+
+You will see this for pretty much every `struct` / `class` deriving from `Rcpp::VectorBase` because (not surprisingly) 
+that `int / bool / typename` combo corresponds to the template parameters of the 
+[VectorBase class](https://github.com/RcppCore/Rcpp/blob/master/inst/include/Rcpp/vector/VectorBase.h#L28).
+`RTYPE` is the integer code representing the `SEXPTYPE`, e.g. `REALSXP` (`numeric`) has an `RTYPE` of 14,
+etc... A complete list can be found [here](http://www.biosino.org/R/R-doc/R-ints/SEXPTYPEs.html). The other 
+non-type template parameter, `NA`, signifies whether or not the base class can contain missing (`NA`) values. 
+Finally, the type parameter `VEC_T`, which is essential to the 
+[CRTP](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Curiously_Recurring_Template_Pattern) 
+idiom, represents the (non-base) vector type; a templated class itself. 
+
++ Line 12; `typedef typename Rcpp::traits::storage_type<INTSXP>::type result_type` 
+
+Note that this is unnecessary in our example; I could have just as well written 
+`typedef int result_type`. However, typically in such templates, `::storage_type< >::type` is used to get the equivalent C++ 
+type of an (unknown) integer template parameter (e.g. `RTYPE`).  
+
+ 
 
 
 
