@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rcpp | Nathan Russell]]></title>
   <link href="http://nathan-russell-blog.github.io/blog/categories/rcpp/atom.xml" rel="self"/>
   <link href="http://nathan-russell-blog.github.io/"/>
-  <updated>2015-11-22T10:08:39-05:00</updated>
+  <updated>2015-11-22T11:06:45-05:00</updated>
   <id>http://nathan-russell-blog.github.io/</id>
   <author>
     <name><![CDATA[Nathan Russell]]></name>
@@ -242,6 +242,61 @@ contain missing values, and if so, they should be preserved in the output vector
 to provide the base class with access to / knowledge of whatever class is deriving from it.</p></li>
 </ol>
 
+
+<p>I&rsquo;ll summarize this with a general (but not definitive) rule-of-thumb regarding the expression template pattern in the
+context of Rcpp: <em>when inheriting from the <code>VectorBase</code> class, we set the non-type parameters based on
+the desired output object, and we set the type parameter to the derived class itself.</em></p>
+
+<hr />
+
+<p>Next, we consider the <code>typedef</code>s on lines 10 and 11 (line 12 was previously touched discussed):</p>
+
+<pre><code class="c++">typedef Rcpp::VectorBase&lt;RTYPE, NA, VEC_T&gt; VEC_TYPE;
+typedef Rcpp::Vector&lt;INTSXP&gt; VECTOR;
+</code></pre>
+
+<p>Here,</p>
+
+<ul>
+<li><p><code>VEC_TYPE</code> is a <code>typedef</code> for the <code>VectorBase</code> object that will be passed to our <code>LazyCastImpl</code> constructor, and for which
+we will also store a constant-reference-to-member to, e.g. <code>vec</code>.</p></li>
+<li><p><code>VECTOR</code> is the output object of our expression (more on this to come). We use a <code>Rcpp::Vector&lt;INTSXP&gt;</code> and not
+a <code>VectorBase&lt;...&gt;</code> because the latter
+is just a base class and not really suitable for direct manipulation within code.</p></li>
+</ul>
+
+
+<hr />
+
+<p>Now we consider line 15, <code>const VEC_TYPE&amp; vec</code>, in conjunction with our constructor on lines 18 and 19:</p>
+
+<pre><code class="c++">LazyCastImpl(const VEC_TYPE&amp; vec_)
+  : vec(vec_.get_ref()) {}
+</code></pre>
+
+<p>Since our member <code>vec</code> is a constant reference object, it <strong>must be initialized in the constructor&rsquo;s member initializer list</strong>.
+Attempting to initialize such a data member in the body of the constructor or at some later point (e.g. in a member function)
+will result in a compiler error. Also, note the manner in which we are initializing <code>vec</code>: <code>vec_.get_ref()</code>. Instead of calling
+the <code>VectorBase</code> copy constructor (which is not explicitly defined, but presumably the compiler has generated one to the effect
+of <code>VectorBase(const VectorBase&amp; other)</code>), we initialize our member <code>vec</code> based on the <code>get_ref()</code> method - a method which we
+also implement in our own class.</p>
+
+<hr />
+
+<p>Finally, we examine lines 21 - 31, the methods of our <code>LazyCastImpl</code> class. First, the <code>size()</code> method on line 21:</p>
+
+<pre><code class="c++ ">inline R_xlen_t size() const {
+  return vec.size();
+}
+</code></pre>
+
+<p>Although we are not directly using this method to accomplish anything, in accordance with CRTP, we must implement it becuase the parent
+class defines its <code>size()</code> method as:</p>
+
+<pre><code class="c++ ">inline R_xlen_t size() const {
+  return static_cast&lt;const VECTOR*&gt;(this)-&gt;size();
+}
+</code></pre>
 ]]></content>
   </entry>
   

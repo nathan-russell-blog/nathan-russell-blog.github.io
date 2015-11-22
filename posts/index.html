@@ -410,6 +410,116 @@ to provide the base class with access to / knowledge of whatever class is derivi
 
 
 
+<p>I&rsquo;ll summarize this with a general (but not definitive) rule-of-thumb regarding the expression template pattern in the
+context of Rcpp: <em>when inheriting from the <code>VectorBase</code> class, we set the non-type parameters based on
+the desired output object, and we set the type parameter to the derived class itself.</em></p>
+
+
+
+
+<hr />
+
+
+
+
+<p>Next, we consider the <code>typedef</code>s on lines 10 and 11 (line 12 was previously touched discussed):</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">typedef</span> <span class="n">Rcpp</span><span class="o">::</span><span class="n">VectorBase</span><span class="o">&lt;</span><span class="n">RTYPE</span><span class="p">,</span> <span class="n">NA</span><span class="p">,</span> <span class="n">VEC_T</span><span class="o">&gt;</span> <span class="n">VEC_TYPE</span><span class="p">;</span>
+</span><span class='line'><span class="k">typedef</span> <span class="n">Rcpp</span><span class="o">::</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">INTSXP</span><span class="o">&gt;</span> <span class="n">VECTOR</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>
+Here,</p>
+
+
+
+
+<ul>
+<li><p><code>VEC_TYPE</code> is a <code>typedef</code> for the <code>VectorBase</code> object that will be passed to our <code>LazyCastImpl</code> constructor, and for which
+we will also store a constant-reference-to-member to, e.g. <code>vec</code>.</p></li>
+<li><p><code>VECTOR</code> is the output object of our expression (more on this to come). We use a <code>Rcpp::Vector&lt;INTSXP&gt;</code> and not
+a <code>VectorBase&lt;...&gt;</code> because the latter
+is just a base class and not really suitable for direct manipulation within code.</p></li>
+</ul>
+
+
+
+
+<hr />
+
+
+
+
+<p>Now we consider line 15, <code>const VEC_TYPE&amp; vec</code>, in conjunction with our constructor on lines 18 and 19:</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">LazyCastImpl</span><span class="p">(</span><span class="k">const</span> <span class="n">VEC_TYPE</span><span class="o">&amp;</span> <span class="n">vec_</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">:</span> <span class="n">vec</span><span class="p">(</span><span class="n">vec_</span><span class="p">.</span><span class="n">get_ref</span><span class="p">())</span> <span class="p">{}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>Since our member <code>vec</code> is a constant reference object, it <strong>must be initialized in the constructor&rsquo;s member initializer list</strong>.
+Attempting to initialize such a data member in the body of the constructor or at some later point (e.g. in a member function)
+will result in a compiler error. Also, note the manner in which we are initializing <code>vec</code>: <code>vec_.get_ref()</code>. Instead of calling
+the <code>VectorBase</code> copy constructor (which is not explicitly defined, but presumably the compiler has generated one to the effect
+of <code>VectorBase(const VectorBase&amp; other)</code>), we initialize our member <code>vec</code> based on the <code>get_ref()</code> method - a method which we
+also implement in our own class.</p>
+
+
+
+
+<hr />
+
+
+
+
+<p>Finally, we examine lines 21 - 31, the methods of our <code>LazyCastImpl</code> class. First, the <code>size()</code> method on line 21:</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kr">inline</span> <span class="n">R_xlen_t</span> <span class="nf">size</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">vec</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>Although we are not directly using this method to accomplish anything, in accordance with CRTP, we must implement it becuase the parent
+class defines its <code>size()</code> method as:</p>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kr">inline</span> <span class="n">R_xlen_t</span> <span class="nf">size</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">VECTOR</span><span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
   </p>
   <span class="meta">
     written 
