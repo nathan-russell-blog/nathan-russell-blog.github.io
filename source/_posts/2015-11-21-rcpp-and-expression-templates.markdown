@@ -97,7 +97,7 @@ the desired output object, and we set the type parameter to the derived class it
 
 ___
 
-Next, we consider the `typedef`s on lines 10 and 11 (line 12 was previously touched discussed): 
+Next, we consider the `typedef`s on lines 10 and 11 (line 12 was previously discussed): 
 
 ``` c++
 typedef Rcpp::VectorBase<RTYPE, NA, VEC_T> VEC_TYPE;
@@ -139,7 +139,7 @@ inline R_xlen_t size() const {
   return vec.size();
 }
 ```
-Although we are not directly using this method to accomplish anything, in accordance with CRTP, we must implement it becuase the parent 
+Although we are not directly using this method to accomplish anything, in accordance with CRTP, we must implement it because the parent 
 class defines its `size()` method as: 
 
 ``` c++ 
